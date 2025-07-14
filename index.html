@@ -20,8 +20,9 @@
       </ul>
     </nav>
     <div class="icons">
-      <span class="cart">🛒</span>
-      <span class="user-icon">👤</span>
+      <span class="cart" style="cursor: pointer;" onclick="location.href='#cart-section'">🛒</span>
+
+      <span class="user-icon" onclick="window.location.href='admin.html'">👤</span>
 
     </div>
   </header>
@@ -39,7 +40,7 @@
         
        
         <p>Explore sports shoes designed for speed, agility, and infinite endurance. Take every stride with confidence, comfort, and unstoppable energy.</p>
-        <button>Buy Now</button>
+        <button onclick="location.href='#cart-section'">Buy Now</button>
          </div>
       </div>
       <img src="rarrow.png" alt="Right Arrow" class="arrow right-arrow">
@@ -51,26 +52,26 @@
       <img class="pop-out-image" src="shoe1.jpg" alt="Dual-Zippers" height="178" width="178">
       <h3>Dual-Zippers</h3>
       <p>Easy on and easy off with our lateral and medial zippers that are featured on both boots.</p>
-      <button>Shop Now</button>
+      
     </div>
 
     <div class="card">
       <img class="pop-out-image" src="shoe2.jpg" alt="All-Terrain Tread"height="178" width="178">
       <h3>All-Terrain Tread</h3>
       <p>Our lugs have been engineered to conquer any and all terrains. Cement, grass, gravel, snow, rain...you name it, we handle it.</p>
-      <button>Shop Now</button>
+      
     </div>
 
     <div class="card">
       <img class="pop-out-image" src="shoe3.jpg" alt="Full Grain Leather"height="178" width="178">
       <h3>Full Grain Leather</h3>
       <p>Much like a leather briefcase or a baseball mitt, the more you use this, the better the leather looks and performs.</p>
-      <button>Shop Now</button>
+      
     </div>
   </div>
 </section>
 <section class="sec">
- <div class="tabs">
+ <div id="cart-section" class="tabs">
         <div class="tab">WOMENS</div>
         <div class="tab">MENS</div>
         <div class="tab">KIDS</div>
@@ -86,20 +87,26 @@
     <div class="product-section">
 
         <!-- Product Card 1 -->
-        <div  class="product-card" >
-            <div class="discount-tag">SAVE 50%</div>
-            <div class="wishlist">&#9825;</div>
-            <img  src="shoes1.jpg" alt="Shoe" class="product-image">
-            <div class="product-name">Hush Puppies</div>
-            <div class="product-type">Minnesota</div>
-            <div class="money">
-                <span class="price">$99.00</span>
-                <span class="old-price">RRP$199.95</span>
-            </div>
-            <div class="rating">
-                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#189;</div>38 reviews
-            </div>
-        </div>
+        <div class="product-card">
+  <div class="discount-tag">SAVE 50%</div>
+  <div class="wishlist">&#9825;</div>
+  <img src="shoes1.jpg" alt="Shoe" class="product-image">
+  <div class="product-name">Hush Puppies</div>
+
+  <!-- Replaced this:
+  <div class="product-type">Minnesota</div>
+  -->
+  <button class="product-type-button" onclick="window.location.href='checkout.html'">Shop Now</button>
+
+  <div class="money">
+    <span class="price">$99.00</span>
+    <span class="old-price">RRP$199.95</span>
+  </div>
+  <div class="rating">
+    <div class="stars">&#9733;&#9733;&#9733;&#9733;&#189;</div>38 reviews
+  </div>
+</div>
+
 
         <!-- Product Card 2 -->
         <div class="product-card">
@@ -107,7 +114,7 @@
             <div class="wishlist">&#9825;</div>
             <img  src="shoes2.jpg" alt="Shoe" class="product-image">
             <div class="product-name">Hush Puppies</div>
-            <div class="product-type">Nerine</div>
+            <button class="product-type-button" onclick="window.location.href='checkout.html'">Shop Now</button>
             <div class="money">
                 <span class="price">$99.00</span>
                 <span class="old-price">RRP$199.95</span>
@@ -123,7 +130,7 @@
             <div class="wishlist">&#9825;</div>
             <img  src="shoes3.jpg" alt="Shoe" class="product-image">
             <div class="product-name">Hush Puppies</div>
-            <div class="product-type">Robyn</div>
+            <button class="product-type-button" onclick="window.location.href='checkout.html'">Shop Now</button>
             <div class="money">
                 <span class="price">$149.00</span>
                 <span class="old-price">RRP$249.95</span>
@@ -139,7 +146,7 @@
             <div class="wishlist">&#9825;</div>
             <img  src="shoes4.jpg" alt="Shoe" class="product-image">
             <div class="product-name">Julius Marlow</div>
-            <div class="product-type">Decode</div>
+            <button class="product-type-button" onclick="window.location.href='checkout.html'">Shop Now</button>
             <div class="money">
                 <span class="price">$99.00</span>
                 <span class="old-price">RRP$199.95</span>
@@ -155,7 +162,7 @@
             <div class="wishlist">&#9825;</div>
             <img  src="shoes5.jpg" alt="Shoe" class="product-image">
             <div class="product-name">Julius Marlow</div>
-            <div class="product-type">Fandango</div>
+            <button class="product-type-button" onclick="window.location.href='checkout.html'">Shop Now</button>
             <div class="money">
                 <span class="price">$99.00</span>
                 <span class="old-price">RRP$169.95</span>
@@ -168,23 +175,29 @@
     </div>
 </section>
 <div class="feature-section">
-    <div class="feature-card">
-        <img  src="delivery-truck-svgrepo-com.svg" alt="Free Shipping">
-        <p>Free Shipping over $79</p>
-    </div>
-    <div class="feature-card">
-        <img  src="return-box-cycle-svgrepo-com.svg" alt="In-store & online returns">
-        <p>In-store & online returns</p>
-    </div>
-    <div class="feature-card">
-        <img  src="map-location-svgrepo-com.svg" alt="Click & Collect">
-        <p>Click & Collect</p>
-    </div>
-    <div class="feature-card">
-        <img  src="giftcard-svgrepo-com.svg" alt="Gift Cards">
-        <p>Gift Cards</p>
-    </div>
+  <div class="feature-card" onclick="window.location.href='delivery_reschedule.html'">
+    <img src="delivery-truck-svgrepo-com.svg" alt="Free Shipping">
+    <p>Reschedule Delivery</p>
+  </div>
+  <div class="feature-card" onclick="window.location.href='return.html'" style="cursor: pointer;">
+    <img src="return-box-cycle-svgrepo-com.svg" alt="In-store & online returns">
+    <p>Return and Track Order</p>
+  </div>
+  <div class="feature-card" onclick="window.location.href='rider.html'">
+    <img src="map-location-svgrepo-com.svg" alt="Click & Collect">
+    <p>Find Optimal Route</p>
+  </div>
+  <div class="feature-card" onclick="window.location.href='order_tracker.html'">
+    <img src="gui-tracker-svgrepo-com.svg" alt="Gift Cards">
+    <p>Track Your Order</p>
+  </div>
+  <div class="feature-card" onclick="window.location.href='feedback.html'">
+    <img src="feedback-svgrepo-com.svg" alt="Secure Payment">
+    <p>Help Us To Improve</p>
+  </div>
+  
 </div>
+
 <footer class="footer">
     <!-- Top Section -->
     
