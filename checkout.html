@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete E-commerce Checkout Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .checkout-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hero-section {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-overlay h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-overlay p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            opacity: 0.9;
+        }
+
+        .checkout-content {
+            padding: 2rem;
+            max-width: 800px;
+            margin: -100px auto 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .checkout-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .form-section {
+            background: rgba(248, 250, 252, 0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .form-section h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-icon {
+            margin-right: 0.75rem;
+            color: #3b82f6;
+            width: 24px;
+            height: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input:hover,
+        .form-group textarea:hover,
+        .form-group select:hover {
+            border-color: #9ca3af;
+        }
+
+        .form-group input.error,
+        .form-group textarea.error,
+        .form-group select.error {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            font-weight: 500;
+            min-height: 1.2rem;
+        }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+        }
+
+        .radio-option:hover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-custom {
+            border-color: #3b82f6;
+            background-color: #3b82f6;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-custom::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .promo-section {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .promo-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .apply-btn {
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .apply-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .apply-btn.applied {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            cursor: not-allowed;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: linear-gradient(135deg, #f4543b 0%, #fc1c0c 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+        }
+
+        .place-order-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .place-order-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success Page Styles */
+        .success-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .success-card h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 1rem;
+        }
+
+        .success-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .order-id {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border: 2px solid #3b82f6;
+        }
+
+        .order-id strong {
+            color: #1d4ed8;
+            font-size: 1.1rem;
+        }
+
+        .success-message {
+            font-style: italic;
+            color: #4b5563;
+        }
+
+        .new-order-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .new-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-overlay h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-overlay p {
+                font-size: 1rem;
+            }
+            
+            .checkout-content {
+                padding: 1rem;
+                margin-top: -50px;
+            }
+            
+            .checkout-card {
+                padding: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-section {
+                padding: 1.5rem;
+            }
+            
+            .promo-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .success-card {
+                padding: 2rem;
+            }
+            
+            .success-card h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                height: 200px;
+            }
+            
+            .checkout-card {
+                padding: 1rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+            
+            .form-section h2 {
+                font-size: 1.25rem;
+            }
+            
+            .place-order-btn {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .place-order-btn:disabled::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Smooth Transitions */
+        .form-group input,
+        .form-group textarea,
+        .form-group select,
+        .radio-option,
+        .apply-btn,
+        .place-order-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Focus Styles for Accessibility */
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus,
+        .radio-option:focus-within,
+        .apply-btn:focus,
+        .place-order-btn:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="checkoutPage" class="checkout-container">
+        <div class="hero-section">
+            <img 
+                src="https://images.pexels.com/photos/4491461/pexels-photo-4491461.jpeg?auto=compress&cs=tinysrgb&w=1200" 
+                alt="Delivery Service"
+                class="hero-image"
+            />
+            <div class="hero-overlay">
+                <h1>Secure Checkout</h1>
+                <p>Complete your order with our fast and secure checkout process</p>
+            </div>
+        </div>
+
+        <div class="checkout-content">
+            <div class="checkout-card">
+                <form id="checkoutForm" class="checkout-form">
+                    <div class="form-section">
+                        <h2>
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Personal Information
+                        </h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fullName">Full Name *</label>
+                                <input
+                                    type="text"
+                                    id="fullName"
+                                    name="fullName"
+                                    placeholder="Enter your full name"
+                                    required
+                                />
+                                <span class="error-message" id="fullNameError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phoneNumber">Phone Number *</label>
+                                <input
+                                    type="tel"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    placeholder="Enter 10-digit phone number"
+                                    required
+                                />
+                                <span class="error-message" id="phoneNumberError"></span>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="emailAddress">Email Address *</label>
+                                <input
+                                    type="email"
+                                    id="emailAddress"
+                                    name="emailAddress"
+                                    placeholder="Enter your email address"
+                                    required
+                                />
+                                <span class="error-message" id="emailAddressError"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Delivery Information
+                        </h2>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="deliveryAddress">Full Delivery Address *</label>
+                                <input
+                                    type="text"
+                                    id="deliveryAddress"
+                                    name="deliveryAddress"
+                                    placeholder="Enter complete delivery address"
+                                    required
+                                />
+                                <span class="error-message" id="deliveryAddressError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="city">City *</label>
+                                <input
+                                    type="text"
+                                    id="city"
+                                    name="city"
+                                    placeholder="Enter city"
+                                    required
+                                />
+                                <span class="error-message" id="cityError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="state">State *</label>
+                                <input
+                                    type="text"
+                                    id="state"
+                                    name="state"
+                                    placeholder="Enter state"
+                                    required
+                                />
+                                <span class="error-message" id="stateError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pincode">Pincode *</label>
+                                <input
+                                    type="text"
+                                    id="pincode"
+                                    name="pincode"
+                                    placeholder="Enter 6-digit pincode"
+                                    required
+                                />
+                                <span class="error-message" id="pincodeError"></span>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="deliveryInstructions">Additional Delivery Instructions</label>
+                                <textarea
+                                    id="deliveryInstructions"
+                                    name="deliveryInstructions"
+                                    placeholder="Any special instructions for delivery (optional)"
+                                    rows="3"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Delivery Schedule
+                        </h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="deliveryDate">Select Delivery Date *</label>
+                                <input
+                                    type="date"
+                                    id="deliveryDate"
+                                    name="deliveryDate"
+                                    required
+                                />
+                                <span class="error-message" id="deliveryDateError"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="deliveryTime">Select Delivery Time *</label>
+                                <select
+                                    id="deliveryTime"
+                                    name="deliveryTime"
+                                    required
+                                >
+                                    <option value="">Choose delivery time</option>
+                                    <option value="Morning">Morning (9:00 AM - 12:00 PM)</option>
+                                    <option value="Afternoon">Afternoon (12:00 PM - 4:00 PM)</option>
+                                    <option value="Evening">Evening (4:00 PM - 8:00 PM)</option>
+                                </select>
+                                <span class="error-message" id="deliveryTimeError"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            Payment Method
+                        </h2>
+                        <div class="payment-options">
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="cod"
+                                />
+                                <span class="radio-custom"></span>
+                                Cash on Delivery
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="upi"
+                                />
+                                <span class="radio-custom"></span>
+                                UPI Payment
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="card"
+                                />
+                                <span class="radio-custom"></span>
+                                Credit/Debit Card
+                            </label>
+                        </div>
+                        <span class="error-message" id="paymentMethodError"></span>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                            </svg>
+                            Promo Code
+                        </h2>
+                        <div class="promo-section">
+                            <input
+                                type="text"
+                                id="promoCode"
+                                name="promoCode"
+                                placeholder="Enter promo code"
+                                class="promo-input"
+                            />
+                            <button
+                                type="button"
+                                id="applyPromoBtn"
+                                class="apply-btn"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="placeOrderBtn"
+                        class="place-order-btn"
+                    >
+                        Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Page -->
+    <div id="successPage" class="success-container hidden">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h1>Order Placed Successfully!</h1>
+            <p>Your order has been confirmed and will be processed shortly.</p>
+            <div class="order-id">
+                <strong id="orderIdDisplay">Order ID: </strong>
+            </div>
+            <p class="success-message">
+                Thank you for your purchase! You will receive a confirmation email shortly.
+            </p>
+            <button id="newOrderBtn" class="new-order-btn">
+                Place New Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC80k9BR2FLRffmEEKM0KoGL611t7eMyh4",
+            authDomain: "shoestore-21075.firebaseapp.com",
+            projectId: "shoestore-21075",
+            storageBucket: "shoestore-21075.firebasestorage.app",
+            messagingSenderId: "653185809738",
+            appId: "1:653185809738:web:77137acbafa408bafbd5b3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Form elements
+        const checkoutForm = document.getElementById('checkoutForm');
+        const checkoutPage = document.getElementById('checkoutPage');
+        const successPage = document.getElementById('successPage');
+        const orderIdDisplay = document.getElementById('orderIdDisplay');
+        const newOrderBtn = document.getElementById('newOrderBtn');
+        const applyPromoBtn = document.getElementById('applyPromoBtn');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+        let promoApplied = false;
+
+        // Set minimum date to today
+        document.getElementById('deliveryDate').min = new Date().toISOString().split('T')[0];
+
+        // Generate unique order ID
+        function generateOrderId() {
+            const timestamp = Date.now().toString();
+            const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+            return `ORD-${timestamp.slice(-6)}-${randomStr}`;
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.textContent = '';
+            });
+            
+            const inputElements = document.querySelectorAll('.error');
+            inputElements.forEach(element => {
+                element.classList.remove('error');
+            });
+        }
+
+        // Show error message
+        function showError(fieldName, message) {
+            const errorElement = document.getElementById(fieldName + 'Error');
+            const inputElement = document.getElementById(fieldName);
+            
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+            if (inputElement) {
+                inputElement.classList.add('error');
+            }
+        }
+
+        // Validate form
+        function validateForm(formData) {
+            clearErrors();
+            let isValid = true;
+
+            // Required field validation
+            const requiredFields = [
+                'fullName', 'phoneNumber', 'emailAddress', 'deliveryAddress',
+                'city', 'state', 'pincode', 'deliveryDate', 'deliveryTime'
+            ];
+
+            requiredFields.forEach(field => {
+                if (!formData[field] || !formData[field].trim()) {
+                    showError(field, `${field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} is required`);
+                    isValid = false;
+                }
+            });
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (formData.emailAddress && !emailRegex.test(formData.emailAddress)) {
+                showError('emailAddress', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            // Phone validation
+            const phoneRegex = /^[0-9]{10}$/;
+            if (formData.phoneNumber && !phoneRegex.test(formData.phoneNumber)) {
+                showError('phoneNumber', 'Please enter a valid 10-digit phone number');
+                isValid = false;
+            }
+
+            // Pincode validation
+            const pincodeRegex = /^[0-9]{6}$/;
+            if (formData.pincode && !pincodeRegex.test(formData.pincode)) {
+                showError('pincode', 'Please enter a valid 6-digit pincode');
+                isValid = false;
+            }
+
+            // Payment method validation
+            if (!formData.paymentMethod) {
+                showError('paymentMethod', 'Please select a payment method');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Apply promo code
+        applyPromoBtn.addEventListener('click', function() {
+            const promoCode = document.getElementById('promoCode').value.trim();
+            
+            if (promoCode) {
+                promoApplied = true;
+                applyPromoBtn.textContent = 'Applied';
+                applyPromoBtn.classList.add('applied');
+                applyPromoBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Promo code applied successfully! 10% discount has been applied.');
+                }, 500);
+            } else {
+                alert('Please enter a promo code');
+            }
+        });
+
+        // Handle form submission
+        checkoutForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(checkoutForm);
+            const orderData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                orderData[key] = value;
+            }
+
+            // Validate form
+            if (!validateForm(orderData)) {
+                return;
+            }
+
+            // Show loading state
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.textContent = 'Placing Order...';
+
+            try {
+                // Generate order ID
+                const orderId = generateOrderId();
+                
+                // Prepare order data for Firebase
+                const completeOrderData = {
+                    ...orderData,
+                    orderId: orderId,
+                    timestamp: new Date().toISOString(),
+                    promoApplied: promoApplied
+                };
+
+                // Save to Firestore
+                await db.collection('orders').add(completeOrderData);
+                console.log('Successfully saved to Firestore!', completeOrderData);
+
+                // Show success page
+                orderIdDisplay.textContent = `Order ID: ${orderId}`;
+                checkoutPage.classList.add('hidden');
+                successPage.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error saving order to Firestore:', error);
+                alert('An error occurred while placing your order. Please try again. Error: ' + error.message);
+            } finally {
+                placeOrderBtn.disabled = false;
+                placeOrderBtn.textContent = 'Place Order';
+            }
+        });
+
+        // Handle new order button
+        newOrderBtn.addEventListener('click', function() {
+            // Reset form
+            checkoutForm.reset();
+            clearErrors();
+            promoApplied = false;
+            applyPromoBtn.textContent = 'Apply';
+            applyPromoBtn.classList.remove('applied');
+            applyPromoBtn.disabled = false;
+            
+            // Show checkout page
+            successPage.classList.add('hidden');
+            checkoutPage.classList.remove('hidden');
+            
+            // Reset minimum date
+            document.getElementById('deliveryDate').min = new Date().toISOString().split('T')[0];
+        });
+
+        // Clear error on input
+        document.querySelectorAll('input, textarea, select').forEach(element => {
+            element.addEventListener('input', function() {
+                if (this.classList.contains('error')) {
+                    this.classList.remove('error');
+                    const errorElement = document.getElementById(this.name + 'Error');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

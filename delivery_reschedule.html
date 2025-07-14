@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reschedule Delivery - DeliveryHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-50px) translateY(-50px); }
+            100% { transform: translateX(0px) translateY(0px); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-control:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-fetch {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            margin-top: 10px;
+        }
+
+        .btn-fetch:hover:not(:disabled) {
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3);
+        }
+
+        .order-details {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-info h3 {
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-shipped {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-processing {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .reschedule-section {
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .delivered-notice {
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+
+            .content {
+                padding: 30px 25px;
+            }
+
+            .order-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .product-image {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Reschedule Delivery</h1>
+            <p>Update your delivery preferences with ease</p>
+        </div>
+
+        <div class="content">
+            <!-- Order ID Form -->
+            <div class="form-group">
+                <label for="orderId">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Order ID
+                </label>
+                <input type="text" id="orderId" class="form-control" placeholder="Enter your order ID (e.g., ORD-12345)" maxlength="20">
+                <button type="button" id="fetchOrderBtn" class="btn btn-fetch">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Fetch Order Details
+                </button>
+            </div>
+
+            <!-- Messages -->
+            <div id="messageArea"></div>
+
+            <!-- Order Details -->
+            <div id="orderDetails" class="order-details"></div>
+
+            <!-- Delivered Notice -->
+            <div id="deliveredNotice" class="delivered-notice">
+                <svg class="icon" style="width: 48px; height: 48px; margin: 0 auto 15px; display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <h3 style="margin-bottom: 10px; color: #059669;">Order Already Delivered</h3>
+                <p>This order has been successfully delivered and cannot be rescheduled.</p>
+            </div>
+
+            <!-- Reschedule Form -->
+            <div id="rescheduleSection" class="reschedule-section">
+                <h3 style="margin-bottom: 20px; color: #1f2937;">Schedule New Delivery</h3>
+                
+                <div class="form-group">
+                    <label for="newDate">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        New Delivery Date
+                    </label>
+                    <input type="date" id="newDate" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="timeSlot">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Preferred Time Slot
+                    </label>
+                    <select id="timeSlot" class="form-control">
+                        <option value="">Select a time slot</option>
+                        <option value="Morning">Morning (9:00 AM - 12:00 PM)</option>
+                        <option value="Afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
+                        <option value="Evening">Evening (5:00 PM - 8:00 PM)</option>
+                    </select>
+                </div>
+
+                <button type="button" id="submitReschedule" class="btn" style="width: 100%;">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Submit Reschedule Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC80k9BR2FLRffmEEKM0KoGL611t7eMyh4",
+            authDomain: "shoestore-21075.firebaseapp.com",
+            projectId: "shoestore-21075",
+            storageBucket: "shoestore-21075.firebasestorage.app",
+            messagingSenderId: "653185809738",
+            appId: "1:653185809738:web:77137acbafa408bafbd5b3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const orderIdInput = document.getElementById('orderId');
+        const fetchOrderBtn = document.getElementById('fetchOrderBtn');
+        const messageArea = document.getElementById('messageArea');
+        const orderDetails = document.getElementById('orderDetails');
+        const rescheduleSection = document.getElementById('rescheduleSection');
+        const deliveredNotice = document.getElementById('deliveredNotice');
+        const newDateInput = document.getElementById('newDate');
+        const timeSlotSelect = document.getElementById('timeSlot');
+        const submitRescheduleBtn = document.getElementById('submitReschedule');
+
+        let currentOrder = null;
+
+        // Sample product images for demo
+        const sampleImages = [
+            'https://images.pexels.com/photos/276517/pexels-photo-276517.jpeg?auto=compress&cs=tinysrgb&w=300',
+            'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=300',
+            'https://images.pexels.com/photos/267406/pexels-photo-267406.jpeg?auto=compress&cs=tinysrgb&w=300',
+            'https://images.pexels.com/photos/325153/pexels-photo-325153.jpeg?auto=compress&cs=tinysrgb&w=300'
+        ];
+
+        // Initialize sample data if needed
+        async function initializeSampleData() {
+            try {
+                const sampleOrders = [
+                    {
+                        id: 'ORD-12345',
+                        customerName: 'John Doe',
+                        productName: 'Wireless Bluetooth Headphones',
+                        productImage: sampleImages[0],
+                        currentDeliveryDate: '2024-12-20',
+                        status: 'Shipped',
+                        orderDate: '2024-12-15',
+                        address: '123 Main St, City, State 12345'
+                    },
+                    {
+                        id: 'ORD-67890',
+                        customerName: 'Jane Smith',
+                        productName: 'Smart Fitness Watch',
+                        productImage: sampleImages[1],
+                        currentDeliveryDate: '2024-12-18',
+                        status: 'Delivered',
+                        orderDate: '2024-12-10',
+                        address: '456 Oak Ave, City, State 67890'
+                    },
+                    {
+                        id: 'ORD-11111',
+                        customerName: 'Mike Johnson',
+                        productName: 'Laptop Computer',
+                        productImage: sampleImages[2],
+                        currentDeliveryDate: '2024-12-22',
+                        status: 'Processing',
+                        orderDate: '2024-12-16',
+                        address: '789 Pine Rd, City, State 11111'
+                    }
+                ];
+
+                for (const order of sampleOrders) {
+                    const docRef = db.collection('orders').doc(order.id);
+                    const doc = await docRef.get();
+                    if (!doc.exists) {
+                        await docRef.set(order);
+                    }
+                }
+            } catch (error) {
+                console.log('Note: Using offline mode or sample data initialization failed');
+            }
+        }
+
+        // Set minimum date to today
+        function setMinDate() {
+            const today = new Date();
+            today.setDate(today.getDate() + 1); // Minimum next day
+            const formattedDate = today.toISOString().split('T')[0];
+            newDateInput.min = formattedDate;
+        }
+
+        // Show message
+        function showMessage(text, type = 'info') {
+            messageArea.innerHTML = `<div class="message ${type}" style="display: block;">${text}</div>`;
+            setTimeout(() => {
+                const message = messageArea.querySelector('.message');
+                if (message) {
+                    message.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        // Display order details
+        function displayOrderDetails(order) {
+            const statusClass = `status-${order.status.toLowerCase()}`;
+            
+            orderDetails.innerHTML = `
+                <div class="order-header">
+                    <img src="${order.productImage}" alt="${order.productName}" class="product-image" onerror="this.src='https://images.pexels.com/photos/276517/pexels-photo-276517.jpeg?auto=compress&cs=tinysrgb&w=300'">
+                    <div class="order-info">
+                        <h3>${order.productName}</h3>
+                        <span class="status-badge ${statusClass}">${order.status}</span>
+                    </div>
+                </div>
+                <div class="order-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Customer</div>
+                        <div class="detail-value">${order.customerName}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Order ID</div>
+                        <div class="detail-value">${order.id}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Order Date</div>
+                        <div class="detail-value">${formatDate(order.orderDate)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Current Delivery</div>
+                        <div class="detail-value">${formatDate(order.currentDeliveryDate)}</div>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <div class="detail-label">Delivery Address</div>
+                        <div class="detail-value">${order.address}</div>
+                    </div>
+                </div>
+            `;
+            
+            orderDetails.style.display = 'block';
+        }
+
+        // Fetch order details
+        async function fetchOrder() {
+            const orderId = orderIdInput.value.trim();
+            
+            if (!orderId) {
+                showMessage('Please enter an Order ID', 'error');
+                return;
+            }
+
+            fetchOrderBtn.disabled = true;
+            fetchOrderBtn.innerHTML = '<span class="loading"></span>Fetching order...';
+
+            try {
+                const docRef = db.collection('orders').doc(orderId);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    currentOrder = { id: doc.id, ...doc.data() };
+                    displayOrderDetails(currentOrder);
+                    
+                    if (currentOrder.status.toLowerCase() === 'delivered') {
+                        deliveredNotice.style.display = 'block';
+                        rescheduleSection.style.display = 'none';
+                        showMessage('This order has already been delivered and cannot be rescheduled.', 'info');
+                    } else {
+                        deliveredNotice.style.display = 'none';
+                        rescheduleSection.style.display = 'block';
+                        showMessage('Order found! You can now reschedule your delivery.', 'success');
+                    }
+                } else {
+                    showMessage('Order not found. Please check your Order ID and try again.', 'error');
+                    hideOrderSections();
+                }
+            } catch (error) {
+                console.error('Error fetching order:', error);
+                showMessage('Error fetching order. Please try again later.', 'error');
+                hideOrderSections();
+            } finally {
+                fetchOrderBtn.disabled = false;
+                fetchOrderBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Fetch Order Details
+                `;
+            }
+        }
+
+        // Hide order sections
+        function hideOrderSections() {
+            orderDetails.style.display = 'none';
+            rescheduleSection.style.display = 'none';
+            deliveredNotice.style.display = 'none';
+            currentOrder = null;
+        }
+
+        // Submit reschedule request
+        async function submitReschedule() {
+            if (!currentOrder) {
+                showMessage('Please fetch an order first.', 'error');
+                return;
+            }
+
+            const newDate = newDateInput.value;
+            const timeSlot = timeSlotSelect.value;
+
+            if (!newDate || !timeSlot) {
+                showMessage('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            const selectedDate = new Date(newDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (selectedDate <= today) {
+                showMessage('Please select a future date for delivery.', 'error');
+                return;
+            }
+
+            submitRescheduleBtn.disabled = true;
+            submitRescheduleBtn.innerHTML = '<span class="loading"></span>Submitting request...';
+
+            try {
+                const rescheduleRequest = {
+                    newDeliveryDate: newDate,
+                    timeSlot: timeSlot,
+                    requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'Pending'
+                };
+
+                await db.collection('orders').doc(currentOrder.id).update({
+                    rescheduleRequest: rescheduleRequest
+                });
+
+                showMessage(`
+                    🎉 Reschedule request submitted successfully! 
+                    <br><strong>New Date:</strong> ${formatDate(newDate)} 
+                    <br><strong>Time Slot:</strong> ${timeSlot}
+                    <br>We'll confirm your new delivery schedule within 24 hours.
+                `, 'success');
+
+                // Reset form
+                newDateInput.value = '';
+                timeSlotSelect.value = '';
+                rescheduleSection.style.display = 'none';
+                
+                // Update current order display to show reschedule request
+                currentOrder.rescheduleRequest = rescheduleRequest;
+                displayOrderDetails(currentOrder);
+                
+            } catch (error) {
+                console.error('Error submitting reschedule:', error);
+                showMessage('Error submitting request. Please try again later.', 'error');
+            } finally {
+                submitRescheduleBtn.disabled = false;
+                submitRescheduleBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Submit Reschedule Request
+                `;
+            }
+        }
+
+        // Event listeners
+        fetchOrderBtn.addEventListener('click', fetchOrder);
+        submitRescheduleBtn.addEventListener('click', submitReschedule);
+
+        // Allow Enter key to fetch order
+        orderIdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchOrder();
+            }
+        });
+
+        // Initialize
+        setMinDate();
+        initializeSampleData();
+
+        // Clear sections when order ID changes
+        orderIdInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                hideOrderSections();
+                messageArea.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Track Your Return</title>
+  <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* CSS Variables for consistent theming */
+    :root {
+      --primary-color: #08849a;
+      --primary-hover: #066b7a;
+      --primary-light: #e6f7f9;
+      --secondary-color: #f8fafc;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border-color: #e2e8f0;
+      --border-radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --gradient-primary: linear-gradient(135deg, #08849a 0%, #0ea5e9 100%);
+      --gradient-bg: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    }
+
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--gradient-bg);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+
+    /* Container for centering content */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Header styling */
+    h2 {
+      color: var(--text-primary);
+      font-size: 2.25rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      letter-spacing: -0.025em;
+    }
+
+    /* Form styling */
+    form {
+      background: white;
+      padding: 2.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    /* Result card styling */
+    .result-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    /* Input styling */
+    input, select {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      margin: 0.75rem 0;
+      border-radius: var(--border-radius);
+      border: 2px solid var(--border-color);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: white;
+      color: var(--text-primary);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(8, 132, 154, 0.1);
+      transform: translateY(-1px);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Button styling */
+    button {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0 0.5rem 0;
+      border-radius: var(--border-radius);
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button[type="submit"] {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+
+    /* Secondary buttons */
+    button:not([type="submit"]) {
+      background: var(--secondary-color);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+      margin: 0.5rem 0;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    button:not([type="submit"]):hover {
+      background: var(--primary-light);
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Cancel button specific styling */
+    button[onclick*="cancelReturn"] {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      margin-top: 1.5rem;
+    }
+
+    button[onclick*="cancelReturn"]:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Status styling */
+    .status {
+      margin: 1rem 0;
+      font-weight: 600;
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary-color);
+      color: var(--primary-color);
+      font-size: 1.1rem;
+    }
+
+    /* Content styling */
+    .result-card p {
+      margin: 1rem 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .result-card p strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Label styling */
+    label {
+      display: block;
+      margin: 1.5rem 0 0.5rem 0;
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    /* HR styling */
+    hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+      margin: 2rem 0;
+    }
+
+    /* Hidden class */
+    .hidden {
+      display: none;
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Loading state */
+    .loading {
+      position: relative;
+      pointer-events: none;
+    }
+
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.875rem;
+        margin-bottom: 1.5rem;
+      }
+
+      form, .result-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      input, select, button {
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      .result-card p {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      form, .result-card {
+        padding: 1.25rem;
+      }
+
+      input, select, button {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Hover effects for interactive elements */
+    form:hover {
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-2px);
+    }
+
+    .result-card:hover {
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Focus states for accessibility */
+    button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    /* Enhanced visual hierarchy */
+    .result-card p:first-of-type {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Improved spacing for form elements */
+    form > *:last-child {
+      margin-bottom: 0;
+    }
+
+    .result-card > *:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Enhanced select styling */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.75rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 3rem;
+      appearance: none;
+    }
+
+    /* Subtle animations for better UX */
+    form, .result-card, input, select, button {
+      transition: var(--transition);
+    }
+
+    /* Enhanced button ripple effect */
+    button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 0.6s, height 0.6s;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    button:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    button > * {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔍 Track Your Return Request</h2>
+
+    <form id="trackForm">
+      <input type="text" id="orderIdInput" placeholder="Enter Order ID" required />
+      <button type="submit">Check Status</button>
+    </form>
+
+    <div id="result" class="result-card hidden"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getFirestore, collection, getDocs, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2ocH-27rxaywmUJuF4y79CY1Nf-GweuE",
+      authDomain: "return-portal-41ba9.firebaseapp.com",
+      projectId: "return-portal-41ba9",
+      storageBucket: "return-portal-41ba9.appspot.com",
+      messagingSenderId: "1085242077493",
+      appId: "1:1085242077493:web:972c0917888d9674af5c7c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const trackForm = document.getElementById("trackForm");
+    const resultDiv = document.getElementById("result");
+
+    trackForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById("orderIdInput").value.trim();
+      const docRef = doc(db, "returns", orderId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        showResult(data, orderId);
+      } else {
+        resultDiv.innerHTML = `<p>No return found for Order ID: ${orderId}</p>`;
+        resultDiv.classList.remove("hidden");
+      }
+    });
+
+    function showResult(data, orderId) {
+      resultDiv.innerHTML = `
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>Name:</strong> ${data.name}</p>
+        <p><strong>Reason:</strong> ${data.reason}</p>
+        <p class="status"><strong>Status:</strong> ${data.status}</p>
+        <p><strong>Pickup/Delivery Date:</strong> ${data.deliveryDate || "Not Scheduled"}</p>
+        <hr />
+        <label>Request New Pickup Date:</label>
+        <input type="date" id="newDate-${orderId}" />
+        <label>Select Time:</label>
+        <select id="newTime-${orderId}">
+          <option value="">Select Time</option>
+          <option value="9AM - 12PM">9AM - 12PM</option>
+          <option value="12PM - 3PM">12PM - 3PM</option>
+          <option value="3PM - 6PM">3PM - 6PM</option>
+        </select>
+        <button onclick="requestDateChange('${orderId}')">Request Date Change</button>
+        <br /><br />
+        <button onclick="cancelReturn('${orderId}')">❌ Cancel Return Request</button>
+      `;
+      resultDiv.classList.remove("hidden");
+    }
+
+    window.requestDateChange = async function(orderId) {
+      const newDate = document.getElementById(`newDate-${orderId}`).value;
+      const newTime = document.getElementById(`newTime-${orderId}`).value;
+
+      if (!newDate || !newTime) {
+        alert("Please select both date and time.");
+        return;
+      }
+
+      const requestNote = `Requested new pickup: ${newDate} (${newTime})`;
+
+      try {
+        await updateDoc(doc(db, "returns", orderId), {
+          requestedDate: newDate,
+          requestedTime: newTime,
+          requestNote: requestNote
+        });
+        alert("Date change request submitted.");
+      } catch (err) {
+        alert("Failed to submit request: " + err.message);
+      }
+    };
+
+    window.cancelReturn = async function(orderId) {
+      if (confirm("Are you sure you want to cancel this return request?")) {
+        try {
+          await deleteDoc(doc(db, "returns", orderId));
+          alert("Return request cancelled.");
+          resultDiv.classList.add("hidden");
+        } catch (err) {
+          alert("Failed to cancel: " + err.message);
+        }
+      }
+    };
+  </script>
+
+</body>
+</html>

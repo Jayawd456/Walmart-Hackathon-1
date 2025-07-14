@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Return a Product</title>
+  <style>
+    /* Import modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    h2 { 
+      color: white;
+      font-size: 2.25rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: -0.5px;
+    }
+    
+    form {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      margin: 0.75rem 0;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #fafafa;
+      outline: none;
+    }
+    
+    input:focus, textarea:focus {
+      border-color: #667eea;
+      background: white;
+      box-shadow: 
+        0 0 0 3px rgba(102, 126, 234, 0.1),
+        0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+    
+    input::placeholder, textarea::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      font-family: inherit;
+    }
+    
+    button {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0 0.5rem 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 10px 25px rgba(102, 126, 234, 0.3),
+        0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    button:hover::before {
+      left: 100%;
+    }
+    
+    #location {
+      position: relative;
+    }
+    
+    #locationResults {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      box-shadow: 
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(10px);
+    }
+    
+    #locationResults.hidden {
+      display: none;
+    }
+    
+    #locationResults div {
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+    
+    #locationResults div:last-child {
+      border-bottom: none;
+    }
+    
+    #locationResults div:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateX(4px);
+    }
+    
+    /* Custom scrollbar for location results */
+    #locationResults::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    #locationResults::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    #locationResults::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 3px;
+    }
+    
+    #locationResults::-webkit-scrollbar-thumb:hover {
+      background: #5a67d8;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      
+      h2 {
+        font-size: 1.875rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      form {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+        margin: 0 0.5rem;
+      }
+      
+      input, textarea, button {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem;
+      }
+      
+      h2 {
+        font-size: 1.625rem;
+      }
+      
+      form {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+      }
+      
+      input, textarea, button {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+      }
+    }
+    
+    /* Loading state animation */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    /* Focus ring for accessibility */
+    input:focus-visible, textarea:focus-visible, button:focus-visible {
+      outline: 2px solid #667eea;
+      outline-offset: 2px;
+    }
+    
+    /* Enhanced visual feedback */
+    form {
+      animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Subtle pattern overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <h2>📝 Return a Product</h2>
+  <form id="returnForm">
+    <input type="email" id="email" placeholder="Your Email" required />
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="text" id="orderId" placeholder="Order ID" required />
+    <textarea id="reason" placeholder="Reason for Return" required></textarea>
+    <input type="text" id="location" placeholder="Your Location" autocomplete="off" required />
+    <div id="locationResults" class="hidden"></div>
+    <button type="submit">Submit Return</button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2ocH-27rxaywmUJuF4y79CY1Nf-GweuE",
+      authDomain: "return-portal-41ba9.firebaseapp.com",
+      projectId: "return-portal-41ba9",
+      storageBucket: "return-portal-41ba9.appspot.com",
+      messagingSenderId: "1085242077493",
+      appId: "1:1085242077493:web:972c0917888d9674af5c7c",
+      measurementId: "G-HPCSV3JR12"
+    };
+    
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("returnForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const data = {
+  name: document.getElementById("name").value,
+  orderId: document.getElementById("orderId").value,
+  reason: document.getElementById("reason").value,
+  location: document.getElementById("location").value,
+  email: document.getElementById("email").value,  // ✅ Added email field
+  status: "Submitted",
+  timestamp: new Date()
+};
+
+
+      try {
+        await setDoc(doc(db, "returns", data.orderId), data);
+        alert("Return submitted successfully!");
+        this.reset();
+      } catch (err) {
+        alert("Error submitting return: " + err.message);
+      }
+    });
+
+    const locationInput = document.getElementById("location");
+    const locationResults = document.getElementById("locationResults");
+
+    locationInput.addEventListener("input", async () => {
+      const query = locationInput.value.trim();
+      if (query.length < 3) {
+        locationResults.classList.add("hidden");
+        locationResults.innerHTML = "";
+        return;
+      }
+
+      const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=7`);
+      const data = await res.json();
+
+      locationResults.innerHTML = "";
+      if (!data.features.length) {
+        locationResults.classList.add("hidden");
+        return;
+      }
+
+      data.features.forEach(place => {
+        let loc = place.properties.name;
+        if (place.properties.city && place.properties.city !== place.properties.name) {
+          loc += ", " + place.properties.city;
+        }
+        if (place.properties.state) {
+          loc += ", " + place.properties.state;
+        }
+        if (place.properties.country) {
+          loc += ", " + place.properties.country;
+        }
+        const div = document.createElement("div");
+        div.textContent = loc;
+        div.addEventListener("click", () => {
+          locationInput.value = loc;
+          locationResults.innerHTML = "";
+          locationResults.classList.add("hidden");
+          locationInput.blur();
+        });
+        locationResults.appendChild(div);
+      });
+      locationResults.classList.remove("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!locationInput.contains(e.target) && !locationResults.contains(e.target)) {
+        locationResults.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>
