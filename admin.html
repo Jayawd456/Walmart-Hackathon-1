@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sneaker Return Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: url('https://images.unsplash.com/photo-1618354691080-d7b2f846aaef?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.4);
+      z-index: -1;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #1e3a8a;
+      margin-top: 0;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .filters label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+
+    select, input[type="text"], input[type="date"], input[type="email"], input[type="password"] {
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      min-width: 160px;
+    }
+
+    button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      background-color: #1e3a8a;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #172c6c;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+
+    .summary {
+      margin: 1rem 0;
+      font-weight: bold;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    td, th {
+      padding: 0.75rem;
+      border: 1px solid #eee;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+    }
+
+    #loginDiv {
+      max-width: 400px;
+      margin: 5rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    #loginDiv h2 {
+      color: #1e3a8a;
+      margin-bottom: 1.5rem;
+    }
+
+    #loginDiv input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    #loginBtn {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    #loginBtn:hover {
+      background-color: #172c6c;
+    }
+
+    #loginStatus {
+      margin-top: 1rem;
+      color: red;
+      font-size: 0.95rem;
+    }
+
+    #locationResults {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #aaa;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      width: 250px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #locationResults div {
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    #locationResults div:hover {
+      background: #f0f0f0;
+    }
+
+    .rider:hover{
+color:rgb(3, 3, 120);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="overlay"></div>
+
+  <div id="loginDiv">
+    <h2>👟 Rider Login</h2>
+    <input type="email" id="adminEmail" placeholder="admin@example.com" required />
+    <input type="password" id="adminPassword" placeholder="admin123" required />
+    <button id="loginBtn">Login</button>
+    <p id="loginStatus"></p>
+   <hr/> <div>OR</div><hr/>
+    <p onclick="window.location.href='courierprev.html'" class="rider">Apply as Rider</p>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <div class="container">
+      <h2>📋 Sneaker Return Dashboard</h2>
+      <div class="filters">
+        <label>Filter by Status:
+          <select id="statusFilter">
+            <option value="">All</option>
+            <option value="Submitted">Submitted</option>
+            <option value="In Transit">In Transit</option>
+            <option value="Processed">Processed</option>
+            <option value="Collected">Collected</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+        </label>
+        <label>From: <input type="date" id="fromDate" /></label>
+        <label>To: <input type="date" id="toDate" /></label>
+        <label>Search Location:
+          <input id="locationSearch" placeholder="Enter location" autocomplete="off" />
+          <div id="locationResults" class="hidden"></div>
+        </label>
+        <button onclick="loadReturns()">Apply Filter</button>
+        <button onclick="exportCSV()">Export CSV</button>
+      </div>
+
+      <div class="summary" id="summary"></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Name</th>
+            <th>Reason</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Collected or Delivery Date</th>
+            <th>Rider</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+      </table>
+      <br />
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2ocH-27rxaywmUJuF4y79CY1Nf-GweuE",
+      authDomain: "return-portal-41ba9.firebaseapp.com",
+      projectId: "return-portal-41ba9",
+      storageBucket: "return-portal-41ba9.appspot.com",
+      messagingSenderId: "1085242077493",
+      appId: "1:1085242077493:web:972c0917888d9674af5c7c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const loginDiv = document.getElementById("loginDiv");
+    const dashboard = document.getElementById("dashboard");
+    const loginBtn = document.getElementById("loginBtn");
+    const adminTable = document.getElementById("adminTable");
+    const summary = document.getElementById("summary");
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("adminEmail").value;
+      const password = document.getElementById("adminPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        document.getElementById("loginStatus").innerText = "Login Failed: " + error.message;
+      }
+    });
+
+    function logout() {
+      signOut(auth);
+    }
+    window.logout = logout;
+
+    function renderRow(data) {
+      const row = document.createElement("tr");
+
+      let riderLabel = `<button onclick="acceptWork('${data.orderId}')">Accept</button>`;
+      if (data.acceptedBy) {
+        if (data.status === "Collected") {
+          riderLabel = `Collected by ${data.acceptedBy}`;
+        } else if (data.status === "Delivered") {
+          riderLabel = `Delivered by ${data.acceptedBy}`;
+        } else {
+          riderLabel = `Accepted by ${data.acceptedBy}`;
+        }
+      }
+
+      row.innerHTML = `
+        <td>${data.orderId}</td>
+        <td>${data.name}</td>
+        <td>${data.reason}</td>
+        <td>${data.location}</td>
+        <td>
+          <select id="status-${data.orderId}">
+            <option ${data.status === 'Submitted' ? 'selected' : ''}>Submitted</option>
+            <option ${data.status === 'In Transit' ? 'selected' : ''}>In Transit</option>
+            <option ${data.status === 'Processed' ? 'selected' : ''}>Processed</option>
+            <option ${data.status === 'Collected' ? 'selected' : ''}>Collected</option>
+            <option ${data.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+          </select>
+        </td>
+        <td><input type="date" id="date-${data.orderId}" value="${data.deliveryDate || ''}" /></td>
+        <td>${riderLabel}</td>
+        <td><button onclick="saveStatus('${data.orderId}')">Save</button></td>
+      `;
+      adminTable.appendChild(row);
+    }
+
+    window.saveStatus = async function(orderId) {
+      const select = document.getElementById(`status-${orderId}`);
+      const dateInput = document.getElementById(`date-${orderId}`);
+      const newStatus = select?.value;
+      const deliveryDate = dateInput?.value;
+
+      if (!newStatus) return alert("No changes made.");
+
+      try {
+        await updateDoc(doc(db, "returns", orderId), {
+          status: newStatus,
+          deliveryDate: deliveryDate || null
+        });
+        alert(`Order ${orderId} updated.`);
+        loadReturns();
+      } catch (err) {
+        alert("Error updating: " + err.message);
+      }
+    };
+
+    window.acceptWork = async function(orderId) {
+      const email = auth.currentUser.email;
+      await updateDoc(doc(db, "returns", orderId), { acceptedBy: email });
+      alert(`Order ${orderId} accepted by ${email}`);
+      loadReturns();
+    };
+
+    window.exportCSV = function () {
+      let csv = "Order ID,Name,Reason,Location,Status,Delivery Date,Accepted By\n";
+      Array.from(adminTable.rows).forEach(row => {
+        const cols = Array.from(row.cells).map(cell => cell.innerText);
+        csv += cols.join(",") + "\n";
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'returns.csv';
+      link.click();
+    };
+
+    async function loadReturns() {
+      adminTable.innerHTML = "";
+      let total = 0, credit = 0;
+      const statusFilter = document.getElementById("statusFilter").value;
+      const from = document.getElementById("fromDate").value;
+      const to = document.getElementById("toDate").value;
+      const locationSearch = document.getElementById("locationSearch").value.trim().toLowerCase();
+
+      const snap = await getDocs(collection(db, "returns"));
+      const currentUser = auth.currentUser;
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        data.orderId = docSnap.id;
+
+        let include = true;
+        if (statusFilter && data.status !== statusFilter) include = false;
+
+        if (from || to) {
+          if (data.timestamp && data.timestamp.toDate) {
+            const created = data.timestamp.toDate();
+            if (from && created < new Date(from)) include = false;
+            if (to && created > new Date(to)) include = false;
+          } else {
+            include = false;
+          }
+        }
+
+        if (locationSearch) {
+          const loc = data.location?.toLowerCase() || "";
+          if (!loc.includes(locationSearch)) include = false;
+        }
+
+        const isMine = currentUser && data.acceptedBy === currentUser.email;
+        const isCommon = !data.acceptedBy;
+
+        if (include && (isMine || isCommon)) {
+          renderRow(data);
+          if (isCommon) total++;
+          if (data.status === "Collected" || data.status === "Delivered") credit += 10;
+        }
+      });
+
+      summary.innerHTML = `
+        Total Public Requests: ${total} | Credit Earned: ₹${credit}
+      `;
+    }
+
+    window.loadReturns = loadReturns;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginDiv.classList.add("hidden");
+        dashboard.classList.remove("hidden");
+        loadReturns();
+      } else {
+        loginDiv.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+      }
+    });
+
+    // Location autocomplete
+    const locationInput = document.getElementById("locationSearch");
+    const locationResults = document.getElementById("locationResults");
+
+    locationInput.addEventListener("input", async () => {
+      const query = locationInput.value.trim();
+      if (query.length < 3) {
+        locationResults.classList.add("hidden");
+        locationResults.innerHTML = "";
+        return;
+      }
+
+      const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=7`);
+      const data = await res.json();
+
+      locationResults.innerHTML = "";
+      if (!data.features.length) {
+        locationResults.classList.add("hidden");
+        return;
+      }
+
+      data.features.forEach(place => {
+        let loc = place.properties.name;
+        if (place.properties.city && place.properties.city !== place.properties.name) {
+          loc += ", " + place.properties.city;
+        }
+        if (place.properties.state) {
+          loc += ", " + place.properties.state;
+        }
+        if (place.properties.country) {
+          loc += ", " + place.properties.country;
+        }
+        const div = document.createElement("div");
+        div.textContent = loc;
+        div.addEventListener("click", () => {
+          locationInput.value = loc;
+          locationResults.innerHTML = "";
+          locationResults.classList.add("hidden");
+        });
+        locationResults.appendChild(div);
+      });
+      locationResults.classList.remove("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!locationInput.contains(e.target) && !locationResults.contains(e.target)) {
+        locationResults.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>
+
