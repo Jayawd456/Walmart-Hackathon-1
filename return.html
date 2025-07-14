@@ -84,7 +84,7 @@
     button {
       width: 100%;
       padding: 1rem 1.25rem;
-      margin: 1.5rem 0 0.5rem 0;
+      margin: 1.5rem 0 0 0;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       font-weight: 600;
@@ -124,6 +124,97 @@
     
     button:hover::before {
       left: 100%;
+    }
+    
+    /* Status Check Link Styling */
+    .status-link-container {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+      position: relative;
+    }
+    
+    .status-link-container::before {
+      content: 'OR';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 0 1rem;
+      color: #9ca3af;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(102, 126, 234, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .status-link:hover {
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 20px rgba(102, 126, 234, 0.25),
+        0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-link:active {
+      transform: translateY(0);
+    }
+    
+    .status-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+    
+    .status-link:hover::before {
+      left: 100%;
+    }
+    
+    .status-icon {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.3s ease;
+    }
+    
+    .status-link:hover .status-icon {
+      transform: scale(1.1);
+    }
+    
+    .actions-section {
+      margin-top: 1rem;
+    }
+    
+    .actions-help-text {
+      color: #6b7280;
+      font-size: 0.875rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 400;
     }
     
     #location {
@@ -211,6 +302,16 @@
         padding: 0.875rem 1rem;
         font-size: 1rem;
       }
+      
+      .status-link {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+      }
+      
+      .status-link-container {
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+      }
     }
     
     @media (max-width: 480px) {
@@ -231,6 +332,16 @@
         padding: 0.75rem;
         margin: 0.5rem 0;
       }
+      
+      .status-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+      
+      .status-link-container {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+      }
     }
     
     /* Loading state animation */
@@ -244,7 +355,7 @@
     }
     
     /* Focus ring for accessibility */
-    input:focus-visible, textarea:focus-visible, button:focus-visible {
+    input:focus-visible, textarea:focus-visible, button:focus-visible, .status-link:focus-visible {
       outline: 2px solid #667eea;
       outline-offset: 2px;
     }
@@ -290,7 +401,23 @@
     <textarea id="reason" placeholder="Reason for Return" required></textarea>
     <input type="text" id="location" placeholder="Your Location" autocomplete="off" required />
     <div id="locationResults" class="hidden"></div>
-    <button type="submit">Submit Return</button>
+    
+    <div class="actions-section">
+      <div class="actions-help-text">
+        Choose an option below to proceed with your return request
+      </div>
+      <button type="submit">Submit Return</button>
+      
+      <div class="status-link-container">
+        <a href="order_tracker.html" class="status-link">
+          <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12l2 2 4-4"/>
+            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9 9-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+          </svg>
+          Check Return Status
+        </a>
+      </div>
+    </div>
   </form>
 
   <script type="module">
@@ -307,22 +434,20 @@
       measurementId: "G-HPCSV3JR12"
     };
     
-
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     document.getElementById("returnForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const data = {
-  name: document.getElementById("name").value,
-  orderId: document.getElementById("orderId").value,
-  reason: document.getElementById("reason").value,
-  location: document.getElementById("location").value,
-  email: document.getElementById("email").value,  // ✅ Added email field
-  status: "Submitted",
-  timestamp: new Date()
-};
-
+        name: document.getElementById("name").value,
+        orderId: document.getElementById("orderId").value,
+        reason: document.getElementById("reason").value,
+        location: document.getElementById("location").value,
+        email: document.getElementById("email").value,
+        status: "Submitted",
+        timestamp: new Date()
+      };
 
       try {
         await setDoc(doc(db, "returns", data.orderId), data);
