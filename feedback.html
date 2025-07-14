@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Delivery Feedback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color:#f2f2f2;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .feedback-container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .center-image {
+      display: block;
+      margin: 20px auto;
+      width: 80px;
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 8px;
+    }
+
+    .rating-group {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .rating-grid {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .rating-item {
+      flex: 1;
+    }
+
+    .rating-item .star {
+      font-size: 28px;
+      color: #ccc;
+      cursor: pointer;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .rating-item .star.active {
+      color: #f39c12;
+    }
+
+    .rating-item .label {
+      font-size: 14px;
+      color: #333;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color:green;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color:green;
+    }
+
+    .thank-you {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="feedback-container">
+    <h2>Product Delivery Feedback</h2>
+    <img src="https://img.icons8.com/emoji/96/delivery-truck.png" class="center-image" alt="Delivery Icon" />
+    <p style="text-align:center;">Tell us about your shopping experience</p>
+
+    <div class="field-group flex-row">
+      <div style="flex:1;">
+        <label>First Name*</label>
+        <input type="text" id="firstName" />
+      </div>
+      <div style="flex:1;">
+        <label>Last Name*</label>
+        <input type="text" id="lastName" />
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Email Address*</label>
+      <input type="email" id="email" />
+    </div>
+
+    <div class="field-group">
+      <label>Phone Number*</label>
+      <input type="tel" id="phone" placeholder="e.g., 9876543210" />
+    </div>
+
+    <div class="field-group">
+      <label>Did you have a good experience while placing your order?*</label>
+      <div class="radio-group">
+        <label><input type="radio" name="experience" value="Yes" /> Yes</label>
+        <label><input type="radio" name="experience" value="No" /> No</label>
+      </div>
+    </div>
+
+    <div class="field-group rating-group">
+      <label style="text-align:center; display:block;">How would you rate the product you received?*</label>
+      <div class="rating-grid" id="starContainer">
+        <div class="rating-item">
+          <span class="star" data-rating="1">&#9733;</span>
+          <div class="label">Very Bad</div>
+        </div>
+        <div class="rating-item">
+          <span class="star" data-rating="2">&#9733;</span>
+          <div class="label">Bad</div>
+        </div>
+        <div class="rating-item">
+          <span class="star" data-rating="3">&#9733;</span>
+          <div class="label">Good</div>
+        </div>
+        <div class="rating-item">
+          <span class="star" data-rating="4">&#9733;</span>
+          <div class="label">Very Good</div>
+        </div>
+        <div class="rating-item">
+          <span class="star" data-rating="5">&#9733;</span>
+          <div class="label">Excellent</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Other thoughts*</label>
+      <textarea id="feedback" rows="4" placeholder="Share your thoughts..."></textarea>
+    </div>
+
+    <button id="submitBtn">Submit Feedback</button>
+    <div class="thank-you" id="thankYou">Thank you for your feedback!</div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK_fSk3G0HnjLGN6Wfcrxrhr4KcOy1ufY",
+      authDomain: "delivery-feedback-87422.firebaseapp.com",
+      databaseURL: "https://delivery-feedback-87422-default-rtdb.firebaseio.com",
+      projectId: "delivery-feedback-87422",
+      storageBucket: "delivery-feedback-87422.firebasestorage.app",
+      messagingSenderId: "159292252999",
+      appId: "1:159292252999:web:5edbe6cdb86c75e1fca262",
+      measurementId: "G-41SNWPN1L6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+
+    let selectedRating = 0;
+    const stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, index) => {
+      star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.rating);
+        stars.forEach(s => s.classList.remove("active"));
+        for (let i = 0; i <= index; i++) {
+          stars[i].classList.add("active");
+        }
+      });
+    });
+
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const feedback = document.getElementById("feedback").value.trim();
+      const experience = document.querySelector('input[name="experience"]:checked');
+
+      if (!firstName || !lastName) {
+        alert("Please enter your full name.");
+        return;
+      }
+
+      if (!/^[a-zA-Z]+$/.test(firstName) || !/^[a-zA-Z]+$/.test(lastName)) {
+        alert("Name should only contain letters.");
+        return;
+      }
+
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      if (!phone || !/^\d{10}$/.test(phone)) {
+        alert("Please enter a valid 10-digit phone number.");
+        return;
+      }
+
+      if (!experience) {
+        alert("Please select your shopping experience.");
+        return;
+      }
+
+      if (selectedRating === 0) {
+        alert("Please select a star rating.");
+        return;
+      }
+
+      if (!feedback) {
+        alert("Please enter your feedback.");
+        return;
+      }
+
+      const feedbackData = {
+        name: `${firstName} ${lastName}`,
+        email,
+        phone,
+        experience: experience.value,
+        rating: selectedRating,
+        message: feedback,
+        timestamp: new Date().toISOString()
+      };
+
+      push(ref(database, "deliveryFeedbacks"), feedbackData)
+        .then(() => {
+          document.getElementById("thankYou").style.display = "block";
+          document.getElementById("feedback").value = "";
+          stars.forEach(s => s.classList.remove("active"));
+          selectedRating = 0;
+        })
+        .catch(err => {
+          alert("Error submitting feedback: " + err.message);
+        });
+    });
+  </script>
+</body>
+</html>

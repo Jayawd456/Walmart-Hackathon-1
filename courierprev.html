@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courier Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 text-gray-800 min-h-screen">
+
+  <div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-md">
+    <div class="flex justify-center mb-4">
+      <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="Delivery Person Bike" class="w-28 h-28">
+    </div>
+    <h2 class="text-3xl font-bold mb-4 text-center">Join Our Delivery Team</h2>
+    <p class="text-center text-gray-600 mb-8">Earn on your own schedule. Register below to get started.</p>
+
+    <form id="registrationForm" class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-medium">Full Name</label>
+        <input type="text" name="name" required class="w-full p-3 border rounded-md" placeholder="John Doe" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Email Address</label>
+        <input type="email" name="email" required class="w-full p-3 border rounded-md" placeholder="you@example.com" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Phone Number</label>
+        <input type="tel" name="phone" required pattern="[0-9]{10}" class="w-full p-3 border rounded-md" placeholder="10-digit mobile number" />
+      </div>
+
+      <div class="flex gap-4">
+        <div class="w-1/2">
+          <label class="block text-sm font-medium">Password</label>
+          <input type="password" id="password" name="password" required class="w-full p-3 border rounded-md" />
+        </div>
+        <div class="w-1/2">
+          <label class="block text-sm font-medium">Confirm Password</label>
+          <input type="password" id="confirmPassword" required class="w-full p-3 border rounded-md" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Vehicle Type</label>
+        <select name="vehicle" required class="w-full p-3 border rounded-md">
+          <option value="">Select Vehicle</option>
+          <option value="bike">Bike</option>
+          <option value="scooter">Scooter</option>
+          <option value="car">Car</option>
+          <option value="foot">Foot</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Vehicle Number</label>
+        <input type="text" name="vehicle_number" class="w-full p-3 border rounded-md" placeholder="DL12AB1234" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Upload Driving License</label>
+        <input type="file" name="license" accept=".pdf,image/*" class="w-full p-2 border rounded-md" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Upload ID Proof (Aadhar/PAN)</label>
+        <input type="file" name="id_proof" accept=".pdf,image/*" class="w-full p-2 border rounded-md" />
+      </div>
+
+      <div class="flex gap-4">
+        <div class="w-1/2">
+          <label class="block text-sm font-medium">City</label>
+          <input type="text" name="city" required class="w-full p-3 border rounded-md" />
+        </div>
+        <div class="w-1/2">
+          <label class="block text-sm font-medium">Pincode</label>
+          <input type="text" name="pincode" required pattern="[0-9]{6}" class="w-full p-3 border rounded-md" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">UPI ID or Bank Details</label>
+        <input type="text" name="payment_details" class="w-full p-3 border rounded-md" placeholder="john@upi / A/c & IFSC" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">PAN Card Number</label>
+        <input type="text" name="pan" class="w-full p-3 border rounded-md" placeholder="ABCDE1234F" />
+      </div>
+
+      <div class="flex items-start">
+        <input type="checkbox" required class="mt-1 mr-2" />
+        <label class="text-sm text-gray-600">I agree to the <a href="#" class="text-blue-600 underline">Terms & Conditions</a> and <a href="#" class="text-blue-600 underline">Privacy Policy</a></label>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+        Register Now & Start Delivering
+      </button>
+    </form>
+  </div>
+
+  <!-- Popup Modal -->
+  <!-- Popup Modal -->
+<div id="popupModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+  <div class="bg-white rounded-lg p-6 shadow-xl max-w-md w-full text-center">
+    <h2 class="text-2xl font-semibold text-green-600 mb-4">🎉 Registration Successful!</h2>
+    <p class="text-gray-700 mb-2"><strong>Name:</strong> <span id="popupName"></span></p>
+    <p class="text-gray-700 mb-2"><strong>Phone:</strong> <span id="popupPhone"></span></p>
+    <p class="text-gray-700 mb-4"><strong>Vehicle:</strong> <span id="popupVehicle"></span></p>
+    <button onclick="document.getElementById('popupModal').classList.add('hidden')" class="mt-3 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Close</button>
+  </div>
+</div>
+
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXsOVlp3R3DnKbm7EfAabemZebuJeartU",
+      authDomain: "service-delivery-329f1.firebaseapp.com",
+      databaseURL: "https://service-delivery-329f1-default-rtdb.firebaseio.com",
+      projectId: "service-delivery-329f1",
+      storageBucket: "service-delivery-329f1.firebasestorage.app",
+      messagingSenderId: "280788840185",
+      appId: "1:280788840185:web:30ddc055155daabde13c28",
+      measurementId: "G-HKTL9NKS7E"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const analytics = getAnalytics(app);
+
+    document.getElementById("registrationForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const pass = document.getElementById("password").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      if (pass !== confirm) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      data.timestamp = new Date().toISOString();
+
+      push(ref(db, "courierRegistrations"), data)
+        .then(() => {
+          // Populate and show popup
+          document.getElementById("popupName").innerText = data.name;
+          document.getElementById("popupPhone").innerText = data.phone;
+          document.getElementById("popupVehicle").innerText = data.vehicle;
+          document.getElementById("popupModal").classList.remove("hidden");
+
+          document.getElementById("registrationForm").reset();
+        })
+        .catch(error => {
+          alert("Error saving data: " + error.message);
+        });
+    });
+  </script>
+
+</body>
+</html>
